@@ -1,1 +1,0 @@
-# remote-googlemap-mcp
