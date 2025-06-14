@@ -6,8 +6,17 @@ COPY --from=flyio/flyctl:latest /flyctl /usr/bin/flyctl
 # Set working directory
 WORKDIR /app
 
-# Install the official Google Maps MCP server
-RUN npm install -g @modelcontextprotocol/server-google-maps
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Build TypeScript code
+RUN npm run build
 
 # Create data directory
 RUN mkdir -p /data
@@ -21,7 +30,7 @@ VOLUME /data
 # Create startup script to handle environment variable expansion
 COPY <<EOF /app/start.sh
 #!/bin/bash
-exec /usr/bin/flyctl mcp wrap --mcp=npx -- @modelcontextprotocol/server-google-maps
+exec node dist/index.js
 EOF
 
 RUN chmod +x /app/start.sh
